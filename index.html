@@ -1,0 +1,1895 @@
+﻿<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>مساعد المدرّس – بسيط وسريع</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --wood:#6b4b2a;    
+  --wood2:#caa87a;   
+  --bg:#24170c;       
+  --text:#f7efe4;    
+  --muted:#d9cbb8;  
+  --glass:rgba(255,255,255,0.08);
+  --line:rgba(255,255,255,0.14);
+  --ok1:#5ecb73; 
+  --ok2:#3da35c;
+  --danger:#ee6b6e;
+}
+
+*{box-sizing:border-box;font-family:'Cairo',system-ui,sans-serif}
+body{
+  margin:0;
+  background:
+    radial-gradient(circle at top,#6a4220,#392616 55%,#1b120a 90%);
+  color:var(--text);
+  min-height:100vh;
+  font-size:15px;
+  position:relative;
+  overflow-x:hidden;
+}
+
+/* طبقات خلفية خشبية + تفاصيل خفيفة */
+body::before{
+  content:"";
+  position:fixed;inset:0;
+  opacity:.12;
+  pointer-events:none;
+  background-image:
+    repeating-linear-gradient(90deg,rgba(255,255,255,.03) 0 2px,transparent 2px 60px);
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:-40%;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at top,rgba(255,255,255,.08),transparent 60%),
+    radial-gradient(circle at bottom left,rgba(0,0,0,.5),transparent 55%);
+  mix-blend-mode:soft-light;
+  opacity:.85;
+}
+
+/* أوربز + إطار وزخارف ذهبية */
+.bg-orbs{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* إطار ذهبي خفيف حول التطبيق */
+.bg-frame{
+  position:absolute;
+  inset:18px 12px 18px 12px;
+  border-radius:28px;
+  border:1px solid rgba(202,168,122,0.26);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,.6),
+    0 18px 40px rgba(0,0,0,.85);
+}
+
+/* خطوط زخرفية ناعمة */
+.decor-line{
+  position:absolute;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(202,168,122,0.7),transparent);
+  opacity:.9;
+}
+.decor-line.top{
+  width:180px;
+  top:30px;right:60px;
+}
+.decor-line.mid{
+  width:140px;
+  top:50%;left:40px;
+  transform:rotate(-16deg);
+  transform-origin:left center;
+}
+.decor-line.bottom{
+  width:200px;
+  bottom:32px;right:80px;
+  transform:rotate(12deg);
+  transform-origin:right center;
+}
+
+/* حلقة ذهبية ديكورية */
+.decor-ring{
+  position:absolute;
+  width:120px;height:120px;
+  border-radius:50%;
+  border:1px solid rgba(202,168,122,0.55);
+  border-top-color:transparent;
+  border-left-color:transparent;
+  top:18%;right:10%;
+  box-shadow:0 0 18px rgba(0,0,0,.7);
+}
+
+/* الأوربز */
+.orb{
+  position:absolute;
+  border-radius:999px;
+  filter:blur(22px);
+  opacity:.35;
+}
+.orb1{
+  width:260px;height:260px;
+  top:-60px;left:-40px;
+  background:radial-gradient(circle,var(--wood2),transparent);
+}
+.orb2{
+  width:320px;height:320px;
+  bottom:-120px;right:-60px;
+  background:radial-gradient(circle,#2d1810,transparent);
+}
+.orb3{
+  width:220px;height:220px;
+  top:40%;right:-80px;
+  background:radial-gradient(circle,rgba(255,255,255,.12),transparent);
+}
+
+/* حاوية التطبيق */
+.app-shell{
+  position:relative;
+  z-index:1;
+}
+
+/* شاشة الدخول (حماية بكلمة مرور) */
+.auth-overlay{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at top,rgba(0,0,0,.92),rgba(0,0,0,.97));
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+}
+.auth-card{
+  max-width:400px;
+  width:100%;
+  background:rgba(20,12,6,.985);
+  border-radius:22px;
+  padding:22px 18px 16px;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 26px 65px rgba(0,0,0,.9);
+  position:relative;
+  overflow:hidden;
+}
+.auth-card::before{
+  content:"";
+  position:absolute;
+  inset:-45% 5% auto;
+  background:radial-gradient(circle at top,rgba(255,255,255,.12),transparent 60%);
+  opacity:.8;
+  pointer-events:none;
+}
+.auth-title{
+  font-weight:800;
+  margin-bottom:4px;
+  font-size:19px;
+}
+.auth-sub{
+  font-size:13px;
+  color:var(--muted);
+  margin-bottom:14px;
+}
+.auth-error{
+  font-size:12px;
+  color:#ffb1b3;
+  min-height:16px;
+  margin-top:4px;
+}
+
+/* صف حقل كلمة المرور */
+.password-row{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}
+.password-row input{
+  flex:1;
+}
+.small-btn{
+  padding:9px 11px;
+  font-size:12px;
+  white-space:nowrap;
+}
+
+/* توب بار */
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 22px;
+  border-bottom:1px solid var(--line);
+  background:rgba(0,0,0,.3);
+  backdrop-filter:blur(14px);
+  box-shadow:0 10px 30px rgba(0,0,0,.7);
+}
+.brand{
+  font-weight:800;
+  letter-spacing:.6px;
+  font-size:16px;
+}
+.teacher{
+  background:linear-gradient(90deg,var(--wood),var(--wood2));
+  padding:9px 20px;
+  border-radius:999px;
+  color:#201106;
+  font-weight:700;
+  box-shadow:0 4px 18px rgba(0,0,0,.7);
+  font-size:15px;
+}
+
+/* تبويبات */
+.tabs{
+  display:flex;gap:10px;
+  padding:10px 22px 6px;
+  border-bottom:1px solid var(--line);
+  background:rgba(0,0,0,.2);
+  backdrop-filter:blur(10px);
+}
+.tab{
+  cursor:pointer;padding:9px 16px;border-radius:999px;
+  background:rgba(255,255,255,.05);
+  font-size:14px;
+  position:relative;
+  transition:background .2s ease, transform .1s ease, box-shadow .15s ease;
+}
+.tab::after{
+  content:"";position:absolute;inset:auto 12px -3px 12px;
+  height:2px;border-radius:999px;
+  background:linear-gradient(90deg,var(--wood2),transparent);
+  opacity:0;transition:opacity .2s ease,transform .2s ease;
+  transform:translateY(2px);
+}
+.tab:hover{
+  transform:translateY(-1px);
+  box-shadow:0 3px 10px rgba(0,0,0,.45);
+}
+.tab.active{
+  background:linear-gradient(90deg,var(--wood),var(--wood2));
+  color:#201106;font-weight:800;
+}
+.tab.active::after{
+  opacity:1;transform:translateY(0);
+}
+
+.page{
+  display:none;
+  max-width:950px;
+  margin:18px auto 20px;
+  padding:0 22px;
+  animation:fadeIn .22s ease;
+}
+.page.active{display:block}
+
+@keyframes fadeIn{
+  from{opacity:0;transform:translateY(4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+.row{display:flex;gap:8px;align-items:center}
+.stack{display:flex;flex-direction:column;gap:10px}
+
+input,button,select,textarea{
+  border:none;border-radius:12px;color:var(--text);
+  font-size:14px;
+}
+input,select,textarea{
+  background:var(--glass);
+  padding:11px 11px;
+  transition:border .12s ease, box-shadow .12s ease, background .12s ease, transform .08s ease;
+}
+input:focus,
+textarea:focus{
+  background:rgba(0,0,0,0.46);
+  box-shadow:0 0 0 1px rgba(255,255,255,.18);
+}
+
+/* أزرار */
+button{
+  padding:11px 16px;
+  background:linear-gradient(180deg,var(--wood2),var(--wood));
+  color:#1f1208;
+  box-shadow:0 4px 16px rgba(0,0,0,.35);
+  font-weight:800;
+  letter-spacing:.2px;
+  transition:transform .06s ease, box-shadow .1s ease, filter .1s ease;
+  font-size:14px;
+}
+button:active{
+  transform:translateY(1px);
+  box-shadow:0 1px 6px rgba(0,0,0,.45);
+  filter:brightness(.96);
+}
+button.ghost{
+  background:rgba(255,255,255,.06);
+  color:var(--text);box-shadow:none;border:1px solid var(--line)
+}
+button.danger{
+  background:linear-gradient(180deg,#ffb1b3,var(--danger));
+  color:#2b0b0c;
+}
+
+/* نطنطة خفيفة وسريعة لكل الأزرار */
+@keyframes bounceOnce{
+  0%{transform:scale(1)}
+  40%{transform:scale(1.04)}
+  70%{transform:scale(0.98)}
+  100%{transform:scale(1)}
+}
+.bouncy{animation:bounceOnce .16s ease}
+
+.donePulse{
+  position:fixed;
+  inset:auto 18px 18px auto;
+  background:linear-gradient(90deg,var(--ok1),var(--ok2));
+  color:#fff;padding:11px 15px;
+  border-radius:12px;
+  box-shadow:0 8px 28px rgba(0,0,0,.45);
+  opacity:0;transform:translateY(8px);
+  transition:.28s;
+  font-size:13px;
+}
+.donePulse.show{opacity:1;transform:translateY(0)}
+
+ul.list{list-style:none;margin:0;padding:0}
+.item{
+  display:flex;justify-content:space-between;align-items:center;
+  background:rgba(0,0,0,.22);
+  border:1px solid var(--line);
+  padding:11px 13px;border-radius:15px;margin-bottom:9px;
+  transition:transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.item:hover{
+  transform:scale(1.02) translateY(-1px);
+  box-shadow:0 4px 14px rgba(0,0,0,0.5);
+  background:rgba(0,0,0,.28);
+}
+.item button,
+.log button{
+  transition:transform .12s ease, box-shadow .12s ease;
+}
+.item button:hover,
+.log button:hover{
+  transform:scale(1.03);
+  box-shadow:0 3px 10px rgba(0,0,0,.45);
+}
+
+.name{font-weight:700;font-size:15px}
+.meta{font-size:13px;color:var(--muted)}
+
+/* كروت محسّنة */
+.card{
+  position:relative;
+  background:rgba(255,255,255,.045);
+  border:1px solid var(--line);
+  padding:16px;
+  border-radius:20px;
+  box-shadow:0 12px 34px rgba(0,0,0,.75);
+}
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:radial-gradient(circle at top,rgba(255,255,255,.06),transparent 60%);
+  opacity:.7;
+  pointer-events:none;
+}
+
+/* سكروول نظيف للسجل */
+.history{
+  max-height:300px;overflow:auto;margin-top:6px;
+  padding-right:4px;
+}
+.history::-webkit-scrollbar{width:7px}
+.history::-webkit-scrollbar-thumb{
+  background:rgba(255,255,255,.24);
+  border-radius:999px;
+}
+.history::-webkit-scrollbar-track{
+  background:rgba(0,0,0,.4);
+}
+
+/* سطر الإجازة */
+.log{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:10px;
+  background:rgba(0,0,0,.22);border:1px solid var(--line);
+  padding:9px 10px;border-radius:12px;margin-bottom:7px
+}
+
+/* سبب الإجازة */
+.leave-reason{
+  margin-top:4px;
+  font-weight:700;
+  font-size:14px;
+  color:var(--text);
+  line-height:1.6;
+}
+
+/* مودالات عامة */
+.modal{
+  position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.58);padding:16px;z-index:20
+}
+.modal.show{display:flex}
+.modalCard{
+  max-width:520px;width:100%;
+  background:rgba(23,15,8,.97);
+  border:1px solid rgba(255,255,255,.18);
+  border-radius:18px;padding:16px;backdrop-filter:blur(7px);
+  box-shadow:0 20px 50px rgba(0,0,0,.85);
+}
+.modalTitle{font-weight:800;margin-bottom:8px;font-size:16px}
+
+/* حقل سبب الإجازة */
+#reasonInput{
+  min-height:140px;
+  width:100%;
+  border-radius:16px;
+  background:rgba(0,0,0,0.52);
+  border:1px solid var(--line);
+  resize:vertical;
+}
+
+/* زر الرجوع */
+.backBtn{
+  background:linear-gradient(90deg,var(--wood),var(--wood2));
+  color:#201106;
+  font-weight:800;
+  border-radius:999px;
+  padding:9px 20px;
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  box-shadow:0 4px 18px rgba(0,0,0,.45);
+  border:none;
+  cursor:pointer;
+  font-size:14px;
+}
+.backBtn::before{
+  content:'↩︎';
+  font-size:18px;
+}
+
+/* توست الرجوع */
+.backToast{
+  position:fixed;
+  inset:auto 18px 60px auto;
+  background:linear-gradient(90deg,var(--wood2),var(--wood));
+  color:#201106;
+  padding:10px 14px;
+  border-radius:12px;
+  box-shadow:0 8px 28px rgba(0,0,0,.45);
+  opacity:0;transform:translateY(8px);
+  transition:.28s;
+  font-weight:700;
+  font-size:13px;
+}
+.backToast.show{
+  opacity:1;
+  transform:translateY(0);
+}
+
+/* خيارات نقل الطالب في المودال */
+.moveOption{
+  width:100%;
+  text-align:center;
+}
+.moveOption.active{
+  box-shadow:0 0 0 2px var(--ok1) inset;
+}
+
+/* نخفي السلكت القديم لأنه بس داخلي */
+#moveSelect{display:none;}
+
+.footer{
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+  padding:4px 0 16px;
+  opacity:.95;
+}
+
+/* ===== Modern elevated styling overrides ===== */
+:root{
+  --bg:#050301;
+  --wood:#d9a441;
+  --wood2:#f6da9a;
+  --text:#fff8e6;
+  --muted:#d7c6a1;
+  --glass:rgba(36,24,9,0.7);
+  --line:rgba(255,214,153,0.25);
+  --surface:rgba(13,9,4,0.9);
+  --deep:#0b0803;
+  --charcoal:#1a1207;
+}
+body{
+  background:
+    radial-gradient(circle at 20% 15%,rgba(217,164,65,0.22),transparent 45%),
+    radial-gradient(circle at 80% 5%,rgba(161,110,35,0.18),transparent 40%),
+    linear-gradient(180deg,#020100,#0a0602 55%,#140c05);
+  color:var(--text);
+}
+body::before{
+  opacity:.25;
+  background-image:
+    radial-gradient(circle at 35% 20%,rgba(255,214,153,.2),transparent 45%),
+    radial-gradient(circle at 70% 75%,rgba(0,0,0,.4),transparent 60%);
+}
+body::after{
+  background:
+    radial-gradient(circle at top,rgba(255,206,133,.18),transparent 55%),
+    radial-gradient(circle at bottom right,rgba(0,0,0,.65),transparent 60%);
+  opacity:.65;
+}
+.topbar{
+  border:1px solid rgba(255,214,153,.4);
+  background:linear-gradient(120deg,#1e1409,#050301);
+  border-radius:30px;
+  padding:20px 28px;
+  margin-bottom:18px;
+  box-shadow:0 25px 70px rgba(0,0,0,.75);
+}
+.brand{
+  font-size:20px;
+  font-weight:800;
+  letter-spacing:.6px;
+}
+.teacher{
+  background:rgba(255,255,255,0.04);
+  padding:7px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,214,153,.25);
+  min-width:200px;
+}
+.tabs{
+  border:1px solid rgba(255,214,153,.25);
+  background:rgba(17,12,7,.9);
+  border-radius:30px;
+  margin:14px 0 24px;
+  padding:16px 20px;
+  box-shadow:0 25px 80px rgba(0,0,0,.7);
+}
+.tab{
+  padding:10px 22px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid transparent;
+  font-weight:600;
+  letter-spacing:.4px;
+}
+.tab.active{
+  background:linear-gradient(120deg,var(--wood),var(--wood2));
+  color:#1e0d02;
+  box-shadow:0 15px 30px rgba(0,0,0,.55);
+}
+.card{
+  background:var(--surface);
+  border:1px solid rgba(255,214,153,.2);
+  box-shadow:0 25px 70px rgba(0,0,0,.8);
+}
+.item{
+  background:rgba(20,14,8,0.88);
+  border:1px solid rgba(255,214,153,.15);
+  box-shadow:0 15px 40px rgba(0,0,0,.65);
+}
+.auth-card{
+  background:rgba(12,8,4,.96);
+  border:1px solid rgba(255,214,153,.25);
+  box-shadow:0 40px 90px rgba(0,0,0,.85);
+}
+.password-row input,
+input,
+select,
+textarea{
+  background:rgba(8,5,2,.65);
+  border:1px solid rgba(255,214,153,.2);
+}
+input:focus,
+textarea:focus{
+  border-color:rgba(255,214,153,.45);
+  box-shadow:0 15px 50px rgba(217,164,65,.35);
+}
+button{
+  background:linear-gradient(120deg,#f8e3ba,#b8822e);
+  color:#2c1503;
+  border:none;
+  font-weight:700;
+}
+button.ghost{
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  border:1px solid rgba(255,214,153,.2);
+}
+button.danger{
+  background:linear-gradient(120deg,#ffb6b6,#b02828);
+  color:#2b0a0a;
+}
+.hero-panel{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:30px;
+  padding:28px;
+  border-radius:34px;
+  background:linear-gradient(135deg,#1b1208,#080401);
+  border:1px solid rgba(255,214,153,.35);
+  box-shadow:0 50px 110px rgba(0,0,0,.85);
+  margin-bottom:22px;
+}
+.hero-intro h1{
+  margin:6px 0 12px;
+  font-size:32px;
+}
+.hero-eyebrow{
+  text-transform:uppercase;
+  letter-spacing:4px;
+  font-size:11px;
+  color:#f5d48c;
+  margin:0;
+}
+.hero-copy{
+  color:var(--muted);
+  line-height:1.5;
+  margin:0;
+}
+.hero-note{
+  font-size:13px;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  color:#f5d48c;
+}
+.hero-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+  gap:18px;
+  align-items:stretch;
+}
+.stat-card{
+  background:rgba(5,3,1,.85);
+  border-radius:24px;
+  padding:20px;
+  border:1px solid rgba(255,214,153,.3);
+  box-shadow:0 25px 55px rgba(0,0,0,.7);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+.stat-label{
+  font-size:13px;
+  color:#f5d48c;
+  letter-spacing:.5px;
+}
+.stat-value{
+  font-size:34px;
+  font-weight:800;
+}
+.stat-foot{
+  font-size:13px;
+  color:rgba(255,244,219,.75);
+}
+.mini-stats{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;
+  margin-bottom:10px;
+}
+.mini-card{
+  background:rgba(9,6,2,.9);
+  border:1px solid rgba(255,214,153,.18);
+  border-radius:18px;
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  box-shadow:0 15px 40px rgba(0,0,0,.5);
+}
+.mini-label{
+  font-size:12px;
+  color:rgba(255,244,219,.7);
+}
+.mini-card strong{
+  font-size:18px;
+  font-weight:800;
+}
+@media(max-width:720px){
+  .topbar{flex-direction:column;gap:12px}
+  .hero-panel{padding:20px}
+}
+</style>
+</head>
+
+<body>
+<div class="bg-orbs">
+  <div class="bg-frame"></div>
+  <div class="decor-line top"></div>
+  <div class="decor-line mid"></div>
+  <div class="decor-line bottom"></div>
+  <div class="decor-ring"></div>
+  <div class="orb orb1"></div>
+  <div class="orb orb2"></div>
+  <div class="orb orb3"></div>
+</div>
+
+<div class="app-shell">
+
+  <!-- شاشة كلمة المرور -->
+  <div id="authOverlay" class="auth-overlay">
+    <div class="auth-card">
+      <div class="auth-title">لوحة مساعد المدرّس</div>
+      <div class="auth-sub">الدخول محمي بكلمة مرور • moderated by Aaryan</div>
+      <div class="stack">
+        <div class="password-row">
+          <input type="password" id="authPassword" placeholder="أدخل كلمة المرور">
+          <button type="button" id="togglePassword" class="ghost small-btn">إظهار</button>
+        </div>
+        <button id="authEnterBtn">دخول</button>
+        <div class="auth-error" id="authError"></div>
+      </div>
+      <div class="meta" style="margin-top:12px;text-align:center">صنع بواسطة أريان</div>
+    </div>
+  </div>
+
+  <!-- التطبيق الرئيسي -->
+  <div id="app" style="display:none">
+
+    <div class="topbar">
+      <div class="brand">مساعدين دلير الخالدي</div>
+      <div id="teacherName" class="teacher" contenteditable>اسم الأستاذ هنا</div>
+    </div>
+
+    <!-- حذفت info-bar حتى يختفي الكلام الزايد -->
+
+    <section class="hero-panel">
+      <div class="hero-intro">
+        <p class="hero-eyebrow">لوحة المتابعة الذهبية</p>
+        <h1>لوحة إجازات الطلاب</h1>
+        <p class="hero-copy hero-note">moderated by Aryan</p>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-card">
+          <span class="stat-label">إجمالي الطلاب</span>
+          <span class="stat-value" id="statStudents">0</span>
+          <span class="stat-foot">الأسماء المعتمدة في النظام</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">طلبات الأعذار</span>
+          <span class="stat-value" id="statLeavesTotal">0</span>
+          <span class="stat-foot" id="statLeavesToday">لا طلبات جديدة اليوم</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="tabs" id="tabs">
+      <div class="tab active" data-page="G1">G1</div>
+      <div class="tab" data-page="G2">G2</div>
+      <div class="tab" data-page="G3">G3</div>
+      <div class="tab" data-page="G4">G4</div>
+    </div>
+
+    <div id="pages"></div>
+
+    <!-- صفحة الطالب -->
+    <div id="studentPage" class="page">
+      <div class="stack">
+        <div class="row" style="justify-content:space-between">
+          <button class="backBtn" id="backBtn">رجوع</button>
+
+          <div class="row">
+            <select id="moveSelect"></select>
+            <button id="moveBtn">نقل للمجموعة</button>
+            <button class="danger" id="deleteStudentBtn">حذف الطالب</button>
+          </div>
+        </div>
+
+        <div id="profileBox" class="card">—</div>
+
+        <div class="card">
+          <div class="row">
+            <button id="giveLeaveBtn">منح إجازة</button>
+            <button class="ghost" id="clearHistoryBtn">مسح السجل لهذا الطالب</button>
+          </div>
+          <div class="history" id="historyList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- مودال سبب الإجازة -->
+    <div id="reasonModal" class="modal" aria-hidden="true">
+      <div class="modalCard">
+        <div class="modalTitle">سبب الإجازة</div>
+        <textarea id="reasonInput" rows="4" placeholder="اكتب السبب هنا (اختياري)"></textarea>
+        <div class="row" style="justify-content:flex-end;margin-top:8px">
+          <button class="ghost" id="cancelReason">إلغاء</button>
+          <button id="doneReason">تم</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- مودال نقل الطالب -->
+    <div id="moveModal" class="modal" aria-hidden="true">
+      <div class="modalCard">
+        <div class="modalTitle">نقل الطالب إلى مجموعة</div>
+        <div id="moveOptions" class="stack" style="margin-bottom:8px"></div>
+        <div class="row" style="justify-content:flex-end;margin-top:8px">
+          <button class="ghost" id="cancelMove">إلغاء</button>
+          <button id="confirmMove">تأكيد النقل</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- مودال تأكيد عام (حذف / مسح / نقل) -->
+    <div id="confirmModal" class="modal" aria-hidden="true">
+      <div class="modalCard">
+        <div class="modalTitle" id="confirmTitle">تأكيد</div>
+        <div class="meta" id="confirmMessage" style="margin:4px 0 10px"></div>
+        <div class="row" style="justify-content:flex-end;margin-top:8px">
+          <button class="ghost" id="confirmCancel">إلغاء</button>
+          <button class="danger" id="confirmOk">تأكيد</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="doneToast" class="donePulse">تم الحفظ ✓</div>
+    <div id="backToast" class="backToast">تمت العودة ↩︎</div>
+
+    <div class="footer">moderated by Aaryan • صنع بواسطة أريان</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+<script>
+/* غيرت الـ STORAGE_KEY حتى يقرأ الأسماء الجديدة بدون ما يتأثر بالقديم */
+const STORAGE_KEY='assistants_students_simple_v5';
+const GROUPS=[
+  {id:'G1',label:'G1'},
+  {id:'G2',label:'G2'},
+  {id:'G3',label:'G3'},
+  {id:'G4',label:'G4'},
+];
+
+/* كلمة المرور */
+const PASSWORD='9009';
+
+const SUPABASE_URL = "https://wfyclmuwwefenacgkycc.supabase.co";
+const SUPABASE_KEY = "sb_publishable_tAA2H96CoX-4v_1bFmHjxA_dX50isnJ";
+const supa = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// مزامنة الإجازات من Supabase مع الحالة المحلية
+async function syncLeavesFromSupabase(){
+  try{
+    const { data, error } = await supa
+      .from('leaves')
+      .select('*')
+      .order('id', { ascending: true });
+
+    if(error){
+      console.error('Supabase load error', error);
+      return;
+    }
+
+    if(state && Array.isArray(state.students)){
+      state.students.forEach(s => { s.leaves = []; });
+    }
+
+    (data || []).forEach(row => {
+      if(!state || !Array.isArray(state.students)) return;
+      const st = state.students.find(s => s.name === row.student_name && s.groupId === row.group_name);
+      if(!st) return;
+      st.leaves.push({
+        id: row.id,
+        dateISO: row.date_from || row.created_at,
+        reason: row.reason || ''
+      });
+    });
+
+    renderAll();
+  }catch(err){
+    console.error('syncLeavesFromSupabase error', err);
+  }
+}
+
+// إضافة إجازة جديدة إلى Supabase
+async function addLeaveToSupabase(studentName, groupId, dateISO, reason){
+  const payload = {
+    student_name: studentName,
+    group_name: groupId,
+    date_from: dateISO.slice(0,10),
+    reason: reason,
+    assistant_name: "أريان"
+  };
+  const { data, error } = await supa.from('leaves').insert(payload).select().single();
+  if(error) throw error;
+  return data;
+}
+
+// حذف إجازة واحدة
+async function deleteLeaveById(id){
+  const { error } = await supa.from('leaves').delete().eq('id', id);
+  if(error) throw error;
+}
+
+// مسح كل إجازات طالب
+async function clearLeavesForStudent(studentName){
+  const { error } = await supa.from('leaves').delete().eq('student_name', studentName);
+  if(error) throw error;
+}
+
+
+/* كل طلاب G1 الافتراضيين */
+let state={students:[
+  {name:'احسان محمد ياسين', groupId:'G1', leaves:[]},
+  {name:'احمد بسام محمد', groupId:'G1', leaves:[]},
+  {name:'احمد حسين علي', groupId:'G1', leaves:[]},
+  {name:'احمد حيدر خليل', groupId:'G1', leaves:[]},
+  {name:'احمد سلمان جبل', groupId:'G1', leaves:[]},
+  {name:'احمد صادق عزيز', groupId:'G1', leaves:[]},
+  {name:'احمد ضياء غازي', groupId:'G1', leaves:[]},
+  {name:'احمد علي حسين', groupId:'G1', leaves:[]},
+  {name:'احمد مسلم احمد', groupId:'G1', leaves:[]},
+  {name:'احمد نزار عبدالحسن', groupId:'G1', leaves:[]},
+  {name:'ادم صدام خزعل', groupId:'G1', leaves:[]},
+  {name:'ازل سرمت صبري', groupId:'G1', leaves:[]},
+  {name:'اسامة رسول كاظم', groupId:'G1', leaves:[]},
+  {name:'الحسن حمزة حسين', groupId:'G1', leaves:[]},
+  {name:'الحسن علي عدنان', groupId:'G1', leaves:[]},
+  {name:'انس سلام جمال', groupId:'G1', leaves:[]},
+  {name:'بشير موسى', groupId:'G1', leaves:[]},
+  {name:'جعفر محمد مجيد', groupId:'G1', leaves:[]},
+  {name:'جواد سرمد جواد', groupId:'G1', leaves:[]},
+  {name:'حازم قاسم محمد', groupId:'G1', leaves:[]},
+  {name:'حسن علي عبدالرضا', groupId:'G1', leaves:[]},
+  {name:'حسن فرج زويد', groupId:'G1', leaves:[]},
+  {name:'حسين علي كاظم', groupId:'G1', leaves:[]},
+  {name:'حسين قاسم صالح', groupId:'G1', leaves:[]},
+  {name:'حكم سنان احسان', groupId:'G1', leaves:[]},
+  {name:'حيدر صباح سالم', groupId:'G1', leaves:[]},
+  {name:'ذوالفقار قيس عبدالحسين', groupId:'G1', leaves:[]},
+  {name:'رامي ايمن علي', groupId:'G1', leaves:[]},
+  {name:'زيد علي عيسى', groupId:'G1', leaves:[]},
+  {name:'سامر صلاح قيس', groupId:'G1', leaves:[]},
+  {name:'سامر وسام حسام', groupId:'G1', leaves:[]},
+  {name:'سرمد عباس نعيم', groupId:'G1', leaves:[]},
+  {name:'سيف وسام رياض', groupId:'G1', leaves:[]},
+  {name:'شبر هشام باقر', groupId:'G1', leaves:[]},
+  {name:'ضرغام عمار عيسى', groupId:'G1', leaves:[]},
+  {name:'طه مصطفى عبدالهادي', groupId:'G1', leaves:[]},
+  {name:'عباس نصير نصيف', groupId:'G1', leaves:[]},
+  {name:'عبدالرحمن عمار عبدالقادر', groupId:'G1', leaves:[]},
+  {name:'عبدالله اسماعيل ادريس', groupId:'G1', leaves:[]},
+  {name:'عبدالله علاء عبدالله', groupId:'G1', leaves:[]},
+  {name:'عبدالله فلاح نوري', groupId:'G1', leaves:[]},
+  {name:'عبدالله محمد نافع', groupId:'G1', leaves:[]},
+  {name:'عبدالله نصير', groupId:'G1', leaves:[]},
+  {name:'عبدالله نمير عبدالكريم', groupId:'G1', leaves:[]},
+  {name:'عبدالله هشام مجبل', groupId:'G1', leaves:[]},
+  {name:'علي باسم عبدالحسين', groupId:'G1', leaves:[]},
+  {name:'علي رعد صالح', groupId:'G1', leaves:[]},
+  {name:'علي سيف داود', groupId:'G1', leaves:[]},
+  {name:'علي صفاء عدنان', groupId:'G1', leaves:[]},
+  {name:'علي صلاح ولي', groupId:'G1', leaves:[]},
+  {name:'علي صلاح مهدي', groupId:'G1', leaves:[]},
+  {name:'علي كامل محسن', groupId:'G1', leaves:[]},
+  {name:'علي محمد مهدي', groupId:'G1', leaves:[]},
+  {name:'علي نبيه حسن', groupId:'G1', leaves:[]},
+  {name:'علي نهاد رحيم', groupId:'G1', leaves:[]},
+  {name:'عمار ياسر علي', groupId:'G1', leaves:[]},
+  {name:'فهد مجبل علي', groupId:'G1', leaves:[]},
+  {name:'فهد ممدوح خضير', groupId:'G1', leaves:[]},
+  {name:'كرار علي فالح', groupId:'G1', leaves:[]},
+  {name:'كرار مازن', groupId:'G1', leaves:[]},
+  {name:'ليث ممدوح خضير', groupId:'G1', leaves:[]},
+  {name:'مؤمل ضياء اسماعيل', groupId:'G1', leaves:[]},
+  {name:'ماريو ماجد سلمان', groupId:'G1', leaves:[]},
+  {name:'محمد احمد اسماعيل', groupId:'G1', leaves:[]},
+  {name:'محمد احمد اموري', groupId:'G1', leaves:[]},
+  {name:'محمد احمد سليمان', groupId:'G1', leaves:[]},
+  {name:'محمد اسامة محسن', groupId:'G1', leaves:[]},
+  {name:'محمد باقر رزاق', groupId:'G1', leaves:[]},
+  {name:'محمد حسن علي', groupId:'G1', leaves:[]},
+  {name:'محمد حيدر محمد', groupId:'G1', leaves:[]},
+  {name:'محمد صادق كاظم', groupId:'G1', leaves:[]},
+  {name:'محمد صلاح حسن', groupId:'G1', leaves:[]},
+  {name:'محمد عبدالهادي عبدالسادة', groupId:'G1', leaves:[]},
+  {name:'محمد مصطفى حاتم', groupId:'G1', leaves:[]},
+  {name:'محمد نهاد عبدالعباس', groupId:'G1', leaves:[]},
+  {name:'محمود احمد زيد', groupId:'G1', leaves:[]},
+  {name:'مصطفى حسن عصام', groupId:'G1', leaves:[]},
+  {name:'مصطفى دريد اسماعيل', groupId:'G1', leaves:[]},
+  {name:'مصطفى عصام كريم', groupId:'G1', leaves:[]},
+  {name:'مصطفى محمد جابر', groupId:'G1', leaves:[]},
+  {name:'مهند حيدر عبدالامير', groupId:'G1', leaves:[]},
+  {name:'مهند طارق ثامر', groupId:'G1', leaves:[]},
+  {name:'موسى محمد عبدعلي', groupId:'G1', leaves:[]},
+  {name:'يامن باسل محمد', groupId:'G1', leaves:[]},
+  {name:'يوسف محمد ماجد', groupId:'G1', leaves:[]},
+  {name:'يوسف موسى قاسم', groupId:'G1', leaves:[]},
+  {name:'آمنة حسن صباح', groupId:'G2', leaves:[]},
+  {name:'بانة حيدر', groupId:'G2', leaves:[]},
+  {name:'بسملة مصطفى', groupId:'G2', leaves:[]},
+  {name:'بنت الهدى امجد', groupId:'G2', leaves:[]},
+  {name:'بنين اياد', groupId:'G2', leaves:[]},
+  {name:'ديما ميثم مراد', groupId:'G2', leaves:[]},
+  {name:'رانية ليث جبار', groupId:'G2', leaves:[]},
+  {name:'رتاج عامر حسن', groupId:'G2', leaves:[]},
+  {name:'رفل حسي اسماعيل', groupId:'G2', leaves:[]},
+  {name:'روان فراس عبدالامير', groupId:'G2', leaves:[]},
+  {name:'زاهدة لؤي ناجي', groupId:'G2', leaves:[]},
+  {name:'زهراء حامد مجيد', groupId:'G2', leaves:[]},
+  {name:'زهراء فاروق قهرمان', groupId:'G2', leaves:[]},
+  {name:'زهراء مهند محمد', groupId:'G2', leaves:[]},
+  {name:'زينب سيف عبدالكريم', groupId:'G2', leaves:[]},
+  {name:'زينب طالب بيد الله', groupId:'G2', leaves:[]},
+  {name:'زينب مهند ماجد', groupId:'G2', leaves:[]},
+  {name:'زينب وسام موسى', groupId:'G2', leaves:[]},
+  {name:'سارة عدنان عبدالخالق', groupId:'G2', leaves:[]},
+  {name:'سارة محمد ابراهيم', groupId:'G2', leaves:[]},
+  {name:'ساره يوسف حلو', groupId:'G2', leaves:[]},
+  {name:'سالي رحمن طالب', groupId:'G2', leaves:[]},
+  {name:'سالي مظفر', groupId:'G2', leaves:[]},
+  {name:'سالي نذير', groupId:'G2', leaves:[]},
+  {name:'سمر محمد فائق', groupId:'G2', leaves:[]},
+  {name:'سيدرا فادي سمير', groupId:'G2', leaves:[]},
+  {name:'شذى فاضل حمدان', groupId:'G2', leaves:[]},
+  {name:'شمس زهير كريم', groupId:'G2', leaves:[]},
+  {name:'شموس مالك جاسم', groupId:'G2', leaves:[]},
+  {name:'شهد ضياء عبدالنبي', groupId:'G2', leaves:[]},
+  {name:'فاطمة حازم اسماعيل', groupId:'G2', leaves:[]},
+  {name:'فاطمة حازم صبر', groupId:'G2', leaves:[]},
+  {name:'فاطمة عطا مكطوف', groupId:'G2', leaves:[]},
+  {name:'فاطمة علي محمد', groupId:'G2', leaves:[]},
+  {name:'فاطمة ماجد كاظم', groupId:'G2', leaves:[]},
+  {name:'فاطمة محمد عباس', groupId:'G2', leaves:[]},
+  {name:'فيد حسن  عبدالهادي', groupId:'G2', leaves:[]},
+  {name:'كوثر حيدر احمد', groupId:'G2', leaves:[]},
+  {name:'لارا عبدالوهاب فاضل', groupId:'G2', leaves:[]},
+  {name:'لينا حسن عادل', groupId:'G2', leaves:[]},
+  {name:'ماريانا مهند فؤاد', groupId:'G2', leaves:[]},
+  {name:'مروج محمد رسن', groupId:'G2', leaves:[]},
+  {name:'مريم اثير كاظم', groupId:'G2', leaves:[]},
+  {name:'مريم احسان محمد', groupId:'G2', leaves:[]},
+  {name:'مريم حمد عاشور', groupId:'G2', leaves:[]},
+  {name:'مريم سرمد سالم', groupId:'G2', leaves:[]},
+  {name:'مريم عبدالجبار حميد', groupId:'G2', leaves:[]},
+  {name:'مريم عدي عصام', groupId:'G2', leaves:[]},
+  {name:'مريم مصطفى احمد', groupId:'G2', leaves:[]},
+  {name:'مسك علاء حسين', groupId:'G2', leaves:[]},
+  {name:'ملاك محمد', groupId:'G2', leaves:[]},
+  {name:'ملك احمد', groupId:'G2', leaves:[]},
+  {name:'ميار احمد عبدالمنعم', groupId:'G2', leaves:[]},
+  {name:'ميس علي فائق', groupId:'G2', leaves:[]},
+  {name:'نبأ سعد وحيد', groupId:'G2', leaves:[]},
+  {name:'نرجس حسن علي', groupId:'G2', leaves:[]},
+  {name:'نرجس سالم شعيع', groupId:'G2', leaves:[]},
+  {name:'نرجس صلاح محسن', groupId:'G2', leaves:[]},
+  {name:'نرجس فراس', groupId:'G2', leaves:[]},
+  {name:'نرجس ميثم', groupId:'G2', leaves:[]},
+  {name:'نور اكرم حسين', groupId:'G2', leaves:[]},
+  {name:'نور العيون محمد', groupId:'G2', leaves:[]},
+  {name:'نور سمير جبار', groupId:'G2', leaves:[]},
+  {name:'نور مهند كريم', groupId:'G2', leaves:[]},
+  {name:'هالة احمد باجي', groupId:'G2', leaves:[]},
+  {name:'هبة وائل عبدالحسن', groupId:'G2', leaves:[]},
+  {name:'يارا فرات عبدالكاظم', groupId:'G2', leaves:[]},
+  {name:'يقين محمد غني', groupId:'G2', leaves:[]},
+  {name:'ابراهيم ثامر', groupId:'G3', leaves:[]},
+  {name:'ابراهيم علي ناظم', groupId:'G3', leaves:[]},
+  {name:'احمد بشار لطيف', groupId:'G3', leaves:[]},
+  {name:'احمد تيسير جاسم', groupId:'G3', leaves:[]},
+  {name:'احمد ثامر صالح', groupId:'G3', leaves:[]},
+  {name:'احمد حاتم محمود', groupId:'G3', leaves:[]},
+  {name:'احمد حيدر عبدالجبار', groupId:'G3', leaves:[]},
+  {name:'احمد ضياء', groupId:'G3', leaves:[]},
+  {name:'احمد طارق احمد', groupId:'G3', leaves:[]},
+  {name:'احمد عباس قاسم', groupId:'G3', leaves:[]},
+  {name:'احمد مثنى محمد', groupId:'G3', leaves:[]},
+  {name:'احمد محمود خالد', groupId:'G3', leaves:[]},
+  {name:'اسامة احمد كاظم', groupId:'G3', leaves:[]},
+  {name:'الحسن احمد جودة', groupId:'G3', leaves:[]},
+  {name:'الحسن رائد نادر', groupId:'G3', leaves:[]},
+  {name:'امير حسين جبر', groupId:'G3', leaves:[]},
+  {name:'امير هشام مجيد', groupId:'G3', leaves:[]},
+  {name:'اوليفر سركون', groupId:'G3', leaves:[]},
+  {name:'جعفر محمد رضا', groupId:'G3', leaves:[]},
+  {name:'حذيفة كفاح مظلوم', groupId:'G3', leaves:[]},
+  {name:'حسن صلاح حسن', groupId:'G3', leaves:[]},
+  {name:'حسن مهند عبدالحسين', groupId:'G3', leaves:[]},
+  {name:'حسين حسام خلف', groupId:'G3', leaves:[]},
+  {name:'حسين خليل', groupId:'G3', leaves:[]},
+  {name:'حسين رعد', groupId:'G3', leaves:[]},
+  {name:'حسين علي جبار', groupId:'G3', leaves:[]},
+  {name:'حيدر علاء كريم', groupId:'G3', leaves:[]},
+  {name:'زيد رعد عبدالرضا', groupId:'G3', leaves:[]},
+  {name:'زين العابدين سالم', groupId:'G3', leaves:[]},
+  {name:'زين العابدين محمد', groupId:'G3', leaves:[]},
+  {name:'زين وميض حاتم', groupId:'G3', leaves:[]},
+  {name:'سجاد فاضل مجهول', groupId:'G3', leaves:[]},
+  {name:'سيف طارق ماهر', groupId:'G3', leaves:[]},
+  {name:'صلاح حسن صلاح', groupId:'G3', leaves:[]},
+  {name:'ضياءالدين باسم', groupId:'G3', leaves:[]},
+  {name:'ظاهر ماجد ظاهر', groupId:'G3', leaves:[]},
+  {name:'عباس احمد', groupId:'G3', leaves:[]},
+  {name:'عباس سعد عباس', groupId:'G3', leaves:[]},
+  {name:'عباس مثنى صباح', groupId:'G3', leaves:[]},
+  {name:'عبدالله حسين علي', groupId:'G3', leaves:[]},
+  {name:'عبدالله سامان جمال', groupId:'G3', leaves:[]},
+  {name:'عبدالله مصطفى موفق', groupId:'G3', leaves:[]},
+  {name:'عبدالله نعيم ابراهيم', groupId:'G3', leaves:[]},
+  {name:'علي احمد حميد', groupId:'G3', leaves:[]},
+  {name:'علي احمد خليل', groupId:'G3', leaves:[]},
+  {name:'علي حسين حمزة', groupId:'G3', leaves:[]},
+  {name:'علي حسين علي', groupId:'G3', leaves:[]},
+  {name:'علي حيدر شاكر', groupId:'G3', leaves:[]},
+  {name:'علي سليم احمد', groupId:'G3', leaves:[]},
+  {name:'علي عبدالحسين كريم', groupId:'G3', leaves:[]},
+  {name:'علي نوار صباح', groupId:'G3', leaves:[]},
+  {name:'فادي رامز ياسين', groupId:'G3', leaves:[]},
+  {name:'فريد علي فريد', groupId:'G3', leaves:[]},
+  {name:'فهد ليث لطيف', groupId:'G3', leaves:[]},
+  {name:'كاظم سرمد داود', groupId:'G3', leaves:[]},
+  {name:'كرار حيدر عباس', groupId:'G3', leaves:[]},
+  {name:'كرار محمد عصام', groupId:'G3', leaves:[]},
+  {name:'كرار هاني', groupId:'G3', leaves:[]},
+  {name:'مؤمل خالد جبار', groupId:'G3', leaves:[]},
+  {name:'مجتبى احمد سامي', groupId:'G3', leaves:[]},
+  {name:'مجد اوس فائز', groupId:'G3', leaves:[]},
+  {name:'محمد حسن مروان', groupId:'G3', leaves:[]},
+  {name:'محمد حيدر كامل', groupId:'G3', leaves:[]},
+  {name:'محمد سليم احمد', groupId:'G3', leaves:[]},
+  {name:'محمد عادل أرزوقي', groupId:'G3', leaves:[]},
+  {name:'محمد عادل جاسم', groupId:'G3', leaves:[]},
+  {name:'محمد عباس فاضل', groupId:'G3', leaves:[]},
+  {name:'محمد محمود حسين', groupId:'G3', leaves:[]},
+  {name:'محمد ناهض هاتف', groupId:'G3', leaves:[]},
+  {name:'محمد نصير علي', groupId:'G3', leaves:[]},
+  {name:'محمد وسام شنته', groupId:'G3', leaves:[]},
+  {name:'مصطفى دلشاد اسعد', groupId:'G3', leaves:[]},
+  {name:'مصطفى رائد عبدالعزيز', groupId:'G3', leaves:[]},
+  {name:'مصطفى عادل احمد', groupId:'G3', leaves:[]},
+  {name:'مصطفى عبدالله محمود', groupId:'G3', leaves:[]},
+  {name:'مصطفى علي تحسين', groupId:'G3', leaves:[]},
+  {name:'مصطفى عمار غازي', groupId:'G3', leaves:[]},
+  {name:'مهدي ضرغام كامل', groupId:'G3', leaves:[]},
+  {name:'مهيمن ماجد ستار', groupId:'G3', leaves:[]},
+  {name:'موسى حسن كاظم', groupId:'G3', leaves:[]},
+  {name:'موسى حيدر محسن', groupId:'G3', leaves:[]},
+  {name:'موسى سعد', groupId:'G3', leaves:[]},
+  {name:'ياسين كمال', groupId:'G3', leaves:[]},
+  {name:'يوسف احمد فوزي', groupId:'G3', leaves:[]},
+  {name:'يوسف سرمد جواد', groupId:'G3', leaves:[]},
+  {name:'يوسف نوفل جميل', groupId:'G3', leaves:[]},
+  {name:'اسراء عبدالرزاق علي', groupId:'G4', leaves:[]},
+  {name:'اسماء مفتن', groupId:'G4', leaves:[]},
+  {name:'امنة نبيل شهاب', groupId:'G4', leaves:[]},
+  {name:'امنية علاء عبدالحسين', groupId:'G4', leaves:[]},
+  {name:'اية انسام حامد', groupId:'G4', leaves:[]},
+  {name:'براء ياسر محمد', groupId:'G4', leaves:[]},
+  {name:'بسمة زياد', groupId:'G4', leaves:[]},
+  {name:'بنين علي كريم', groupId:'G4', leaves:[]},
+  {name:'تبارك سيف الدين قصي', groupId:'G4', leaves:[]},
+  {name:'تبارك عبدالرزاق طاهر', groupId:'G4', leaves:[]},
+  {name:'تبارك فاضل عباس', groupId:'G4', leaves:[]},
+  {name:'تمارا بهاء الدين', groupId:'G4', leaves:[]},
+  {name:'تمارة مثنى حافظ', groupId:'G4', leaves:[]},
+  {name:'جنات مازن عگله', groupId:'G4', leaves:[]},
+  {name:'جنة حارث مجيد', groupId:'G4', leaves:[]},
+  {name:'جنة مؤيد هادي', groupId:'G4', leaves:[]},
+  {name:'حوراء احمد حطاب', groupId:'G4', leaves:[]},
+  {name:'حوراء رأفت نوري', groupId:'G4', leaves:[]},
+  {name:'حوراء صفاء مهدي', groupId:'G4', leaves:[]},
+  {name:'خنساء حيدر علي', groupId:'G4', leaves:[]},
+  {name:'دانية نجم الدين عبدالله', groupId:'G4', leaves:[]},
+  {name:'دانية وسام سلوم', groupId:'G4', leaves:[]},
+  {name:'درر مروان صلاح', groupId:'G4', leaves:[]},
+  {name:'ديما دريد صفوة', groupId:'G4', leaves:[]},
+  {name:'رتاج اركان', groupId:'G4', leaves:[]},
+  {name:'رحمة اسماعيل', groupId:'G4', leaves:[]},
+  {name:'رزان مشتاق هادي', groupId:'G4', leaves:[]},
+  {name:'رشا محمد امير', groupId:'G4', leaves:[]},
+  {name:'رضوى مالك محمد', groupId:'G4', leaves:[]},
+  {name:'رفل اسامة غالي', groupId:'G4', leaves:[]},
+  {name:'رفل مازن موحي', groupId:'G4', leaves:[]},
+  {name:'رفيف حسين درويش', groupId:'G4', leaves:[]},
+  {name:'رفيف كريم مفتن', groupId:'G4', leaves:[]},
+  {name:'رقى فوزي فيصل', groupId:'G4', leaves:[]},
+  {name:'رقية علي عباس', groupId:'G4', leaves:[]},
+  {name:'رقية وضاح نعيم', groupId:'G4', leaves:[]},
+  {name:'رواء علي الوس', groupId:'G4', leaves:[]},
+  {name:'روان حيدر شاكر', groupId:'G4', leaves:[]},
+  {name:'روان عقيل صادق', groupId:'G4', leaves:[]},
+  {name:'روان عماد عبدالحسن', groupId:'G4', leaves:[]},
+  {name:'روان قحطان عبدالامير', groupId:'G4', leaves:[]},
+  {name:'روز مثنى عبدالمنعم', groupId:'G4', leaves:[]},
+  {name:'روز موفق حسين', groupId:'G4', leaves:[]},
+  {name:'روز ياسر عبد', groupId:'G4', leaves:[]},
+  {name:'رولا علي', groupId:'G4', leaves:[]},
+  {name:'ريم حيدر سلمان', groupId:'G4', leaves:[]},
+  {name:'زهراء احمد مجيد', groupId:'G4', leaves:[]},
+  {name:'زهراء حمود محسن', groupId:'G4', leaves:[]},
+  {name:'زهراء سعد لازم', groupId:'G4', leaves:[]},
+  {name:'زهراء علي كريم', groupId:'G4', leaves:[]},
+  {name:'زهراء قحطان', groupId:'G4', leaves:[]},
+  {name:'زهراء لطيف كاظم', groupId:'G4', leaves:[]},
+  {name:'سارة جاسم محمد', groupId:'G4', leaves:[]},
+  {name:'سارة حسين علي', groupId:'G4', leaves:[]},
+  {name:'سارة علي ناصر', groupId:'G4', leaves:[]},
+  {name:'سارة محمد عبدالجليل', groupId:'G4', leaves:[]},
+  {name:'سدرا اراز عمر', groupId:'G4', leaves:[]},
+  {name:'سرى سامي طعمة', groupId:'G4', leaves:[]},
+  {name:'سما احمد فاروق', groupId:'G4', leaves:[]},
+  {name:'سما لؤي بهنام', groupId:'G4', leaves:[]},
+  {name:'سمر عباس فاضل', groupId:'G4', leaves:[]},
+  {name:'سنا يسار رشيد', groupId:'G4', leaves:[]},
+  {name:'شمس احمد وليد', groupId:'G4', leaves:[]},
+  {name:'شمس دلير صباح', groupId:'G4', leaves:[]},
+  {name:'شهلاء سدير عبدالرحيم', groupId:'G4', leaves:[]},
+  {name:'صبا امجد رحيم', groupId:'G4', leaves:[]},
+  {name:'طيبة سرمد حسين', groupId:'G4', leaves:[]},
+  {name:'طيبة سلوان عبدالغني', groupId:'G4', leaves:[]},
+  {name:'عذراء محمد', groupId:'G4', leaves:[]},
+  {name:'غدير صادق احمد', groupId:'G4', leaves:[]},
+  {name:'فاطمة امجد وائل', groupId:'G4', leaves:[]},
+  {name:'فاطمة صادق صالح', groupId:'G4', leaves:[]},
+  {name:'فاطمة صباح مطشر', groupId:'G4', leaves:[]},
+  {name:'فاطمة علاء راضي', groupId:'G4', leaves:[]},
+  {name:'فاطمة علي كريم', groupId:'G4', leaves:[]},
+  {name:'فاطمة محمد عماد الدين', groupId:'G4', leaves:[]},
+  {name:'فاطمة منذر نعمان', groupId:'G4', leaves:[]},
+  {name:'فرح احمد بسام', groupId:'G4', leaves:[]},
+  {name:'فرح حامد معيبد', groupId:'G4', leaves:[]},
+  {name:'فلورا رائد الياس', groupId:'G4', leaves:[]},
+  {name:'قمر عامر جابر', groupId:'G4', leaves:[]},
+  {name:'كوثر عدنان نعمان', groupId:'G4', leaves:[]},
+  {name:'لبنى مثنى محمد', groupId:'G4', leaves:[]},
+  {name:'ليان نوزاد', groupId:'G4', leaves:[]},
+  {name:'ماريان وسام حبيب', groupId:'G4', leaves:[]},
+  {name:'محمد عقيل صادق', groupId:'G4', leaves:[]},
+  {name:'مرام انمار ياسر', groupId:'G4', leaves:[]},
+  {name:'مرام عصام', groupId:'G4', leaves:[]},
+  {name:'مرح علي لطيف', groupId:'G4', leaves:[]},
+  {name:'مريم احمد عبدالله', groupId:'G4', leaves:[]},
+  {name:'مريم حسن سلمان', groupId:'G4', leaves:[]},
+  {name:'مريم عباس عبدالله', groupId:'G4', leaves:[]},
+  {name:'مريم عباس نعيمة', groupId:'G4', leaves:[]},
+  {name:'مريم عبدالمسيح سامي', groupId:'G4', leaves:[]},
+  {name:'مريم محمد جاسم', groupId:'G4', leaves:[]},
+  {name:'مريم محمد ماجد', groupId:'G4', leaves:[]},
+  {name:'ملاك حمودي منذر', groupId:'G4', leaves:[]},
+  {name:'ملاك سلام عبدالله', groupId:'G4', leaves:[]},
+  {name:'ملك سعدي عيدان', groupId:'G4', leaves:[]},
+  {name:'منار عبدالله', groupId:'G4', leaves:[]},
+  {name:'منة باسل محمد', groupId:'G4', leaves:[]},
+  {name:'ميار محمد عبد الواحد', groupId:'G4', leaves:[]},
+  {name:'ميريام حسام طالب', groupId:'G4', leaves:[]},
+  {name:'مينا حارث قيس', groupId:'G4', leaves:[]},
+  {name:'نبأ حيدر سعدون', groupId:'G4', leaves:[]},
+  {name:'نبأ رافد عبدالعالي', groupId:'G4', leaves:[]},
+  {name:'نجلاء نبيل خزعل', groupId:'G4', leaves:[]},
+  {name:'ندى غزوان قاصد', groupId:'G4', leaves:[]},
+  {name:'نرجس حسين هادي', groupId:'G4', leaves:[]},
+  {name:'نور احمد خليل', groupId:'G4', leaves:[]},
+  {name:'نور احمد عبدالاله', groupId:'G4', leaves:[]},
+  {name:'نور اياد محمد', groupId:'G4', leaves:[]},
+  {name:'نور صباح محمد', groupId:'G4', leaves:[]},
+  {name:'نور علي كريم', groupId:'G4', leaves:[]},
+  {name:'نور لقمان', groupId:'G4', leaves:[]},
+  {name:'هاجر باسم رحيم', groupId:'G4', leaves:[]},
+  {name:'هاجر دريد اسماعيل', groupId:'G4', leaves:[]},
+  {name:'هبة سيف الدين', groupId:'G4', leaves:[]},
+  {name:'ود ضرغام لائق', groupId:'G4', leaves:[]},
+  {name:'وديان عثمان طارق', groupId:'G4', leaves:[]},
+  {name:'ورد سرمد', groupId:'G4', leaves:[]},
+  {name:'يارا سلوان اكرم', groupId:'G4', leaves:[]},
+  {name:'يمامة محمد سعد', groupId:'G4', leaves:[]}
+]};
+
+/* عناصر شاشة الدخول */
+const authOverlay=document.getElementById('authOverlay');
+const appRoot=document.getElementById('app');
+const authPassword=document.getElementById('authPassword');
+const authEnterBtn=document.getElementById('authEnterBtn');
+const authError=document.getElementById('authError');
+const togglePasswordBtn=document.getElementById('togglePassword');
+
+/* عناصر التطبيق */
+const tabs=document.getElementById('tabs');
+const pages=document.getElementById('pages');
+const teacherEl=document.getElementById('teacherName');
+const doneToast=document.getElementById('doneToast');
+const backToast=document.getElementById('backToast');
+const statStudents=document.getElementById('statStudents');
+const statLeavesTotal=document.getElementById('statLeavesTotal');
+const statLeavesToday=document.getElementById('statLeavesToday');
+
+const reasonModal=document.getElementById('reasonModal');
+const reasonInput=document.getElementById('reasonInput');
+const cancelReason=document.getElementById('cancelReason');
+const doneReason=document.getElementById('doneReason');
+let modalContext={student:null, triggerBtn:null};
+
+const studentPage=document.getElementById('studentPage');
+const profileBox=document.getElementById('profileBox');
+const historyList=document.getElementById('historyList');
+const backBtn=document.getElementById('backBtn');
+const giveLeaveBtn=document.getElementById('giveLeaveBtn');
+const clearHistoryBtn=document.getElementById('clearHistoryBtn');
+const moveSelect=document.getElementById('moveSelect');
+const moveBtn=document.getElementById('moveBtn');
+const deleteStudentBtn=document.getElementById('deleteStudentBtn');
+
+const moveModal=document.getElementById('moveModal');
+const moveOptions=document.getElementById('moveOptions');
+const cancelMove=document.getElementById('cancelMove');
+const confirmMove=document.getElementById('confirmMove');
+let pendingMoveGroupId=null;
+
+/* مودال التأكيد العام */
+const confirmModal=document.getElementById('confirmModal');
+const confirmTitleEl=document.getElementById('confirmTitle');
+const confirmMessageEl=document.getElementById('confirmMessage');
+const confirmCancelBtn=document.getElementById('confirmCancel');
+const confirmOkBtn=document.getElementById('confirmOk');
+let confirmState={onConfirm:null};
+
+/* بونس خفيف لكل الأزرار */
+document.addEventListener('click',(e)=>{
+  const btn=e.target.closest('button');
+  if(!btn) return;
+  btn.classList.remove('bouncy');
+  void btn.offsetWidth;
+  btn.classList.add('bouncy');
+});
+
+/* إظهار / إخفاء كلمة المرور */
+togglePasswordBtn.addEventListener('click',()=>{
+  const isText=authPassword.type==='text';
+  authPassword.type=isText?'password':'text';
+  togglePasswordBtn.textContent=isText?'إظهار':'إخفاء';
+});
+
+/* شاشة الدخول */
+function unlockApp(){
+  authOverlay.style.display='none';
+  appRoot.style.display='block';
+}
+function checkAuthOnLoad(){
+  authOverlay.style.display='flex';
+  appRoot.style.display='none';
+  authPassword.value='';
+  authError.textContent='';
+}
+authEnterBtn.addEventListener('click',()=>{
+  const val=authPassword.value.trim();
+  if(!val){
+    authError.textContent='أدخل كلمة المرور.';
+    return;
+  }
+  if(val===PASSWORD){
+    authError.textContent='';
+    unlockApp();
+  }else{
+    authError.textContent='كلمة المرور غير صحيحة.';
+  }
+});
+authPassword.addEventListener('keydown',(e)=>{
+  if(e.key==='Enter') authEnterBtn.click();
+});
+
+/* مودال التأكيد العام */
+function openConfirm(opts){
+  confirmTitleEl.textContent = opts.title || 'تأكيد';
+  confirmMessageEl.textContent = opts.message || '';
+  confirmOkBtn.textContent = opts.okLabel || 'تأكيد';
+  if(opts.danger){
+    confirmOkBtn.classList.add('danger');
+  }else{
+    confirmOkBtn.classList.remove('danger');
+  }
+  confirmState.onConfirm = typeof opts.onConfirm==='function' ? opts.onConfirm : null;
+  confirmModal.classList.add('show');
+}
+function closeConfirm(){
+  confirmModal.classList.remove('show');
+  confirmState.onConfirm=null;
+}
+confirmCancelBtn.addEventListener('click', closeConfirm);
+confirmOkBtn.addEventListener('click', ()=>{
+  if(confirmState.onConfirm) confirmState.onConfirm();
+  closeConfirm();
+});
+
+/* إنشاء صفحات المجموعات */
+GROUPS.forEach(g=>{
+  const page=document.createElement('div');
+  page.className='page'+(g.id==='G1'?' active':'');
+  page.id='page_'+g.id;
+  page.innerHTML=`
+    <div class="stack">
+      <h2 style="margin:4px 0;font-size:17px">${g.label}</h2>
+      <div class="mini-stats">
+        <div class="mini-card">
+          <span class="mini-label">طلاب المجموعة</span>
+          <strong id="stat_group_${g.id}">0</strong>
+        </div>
+        <div class="mini-card">
+          <span class="mini-label">أعذار المجموعة</span>
+          <strong id="stat_leaves_${g.id}">0</strong>
+        </div>
+      </div>
+
+      <div class="row">
+        <input id="search_${g.id}" placeholder="ابحث عن اسم الطالب في ${g.label}" style="flex:1">
+        <button id="clear_${g.id}" class="ghost">مسح</button>
+      </div>
+
+      <div class="row">
+        <input id="add_${g.id}" placeholder="أضف اسم الطالب إلى ${g.label}" style="flex:1">
+        <button id="addBtn_${g.id}">إضافة</button>
+      </div>
+
+      <ul id="list_${g.id}" class="list"></ul>
+    </div>`;
+  pages.appendChild(page);
+});
+
+/* تبويبات */
+tabs.addEventListener('click',(e)=>{
+  const t=e.target.closest('.tab'); 
+  if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  showPage(t.dataset.page);
+});
+
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const page=document.getElementById('page_'+id);
+  if(page) page.classList.add('active');
+  updateHeroStats();
+}
+
+window.addEventListener('load',()=>{
+  checkAuthOnLoad();
+  load();
+});
+
+teacherEl.addEventListener('input', saveAll);
+
+function load(){
+  const raw=localStorage.getItem(STORAGE_KEY);
+  if(raw){ try{state=JSON.parse(raw)}catch(_){} }
+  const t=localStorage.getItem(STORAGE_KEY+'_teacher');
+  if(t) teacherEl.textContent=t;
+  // رسم الحالة من التخزين المحلي أولاً
+  renderAll();
+  // بعدها نزامن الإجازات من Supabase حتى تتوحد بين كل الأجهزة
+  if(typeof syncLeavesFromSupabase === 'function'){
+    syncLeavesFromSupabase();
+  }
+}
+function saveAll(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  localStorage.setItem(STORAGE_KEY+'_teacher', teacherEl.textContent.trim());
+  renderAll();
+}
+
+function renderGroup(gid){
+  const ul=document.getElementById('list_'+gid);
+  const q=(document.getElementById('search_'+gid).value||'').trim().toLowerCase();
+  ul.innerHTML='';
+
+  state.students
+    .filter(s=>s.groupId===gid)
+    .filter(s=>!q || s.name.toLowerCase().includes(q))
+    .forEach(s=>{
+      const li=document.createElement('li'); 
+      li.className='item'; 
+      li.dataset.name=s.name; 
+      li.dataset.group=gid;
+
+      const left=document.createElement('div');
+      const nm=document.createElement('div'); nm.className='name'; nm.textContent=s.name;
+      const meta=document.createElement('div'); meta.className='meta'; meta.textContent = `إجمالي الإجازات: ${s.leaves.length}`;
+      left.appendChild(nm); left.appendChild(meta);
+      left.style.display='flex'; left.style.flexDirection='column'; left.style.gap='4px';
+
+      const actions=document.createElement('div');
+      const give=document.createElement('button'); give.textContent='إجازة'; give.onclick=(ev)=>openReasonModal(s, ev.currentTarget);
+      const file=document.createElement('button'); file.className='ghost'; file.textContent='فتح السجل'; file.onclick=()=>openStudentPage(s.name);
+      const del=document.createElement('button'); 
+      del.className='danger'; 
+      del.textContent='حذف';
+      del.dataset.action='delete';
+      del.dataset.name=s.name; 
+      del.dataset.group=gid;
+
+      actions.appendChild(give); 
+      actions.appendChild(file); 
+      actions.appendChild(del);
+
+      li.appendChild(left); 
+      li.appendChild(actions);
+      ul.appendChild(li);
+    });
+}
+
+function renderAll(){
+  GROUPS.forEach(g=>{
+    const s=document.getElementById('search_'+g.id);
+    const c=document.getElementById('clear_'+g.id);
+    const a=document.getElementById('add_'+g.id);
+    const ab=document.getElementById('addBtn_'+g.id);
+
+    if(!s._wired){
+      s._wired=true; 
+      s.addEventListener('input',()=>renderGroup(g.id));
+      c.addEventListener('click',()=>{s.value=''; renderGroup(g.id)});
+      ab.addEventListener('click',()=>{
+        const name=a.value.trim(); 
+        if(!name) return alert('اكتب اسم الطالب'); 
+        if(state.students.some(x=>x.name===name)) return alert('موجود مسبقًا'); 
+        state.students.push({name, groupId:g.id, leaves:[]}); 
+        a.value=''; 
+        saveAll();
+      });
+      a.addEventListener('keydown',e=>{if(e.key==='Enter') ab.click();});
+    }
+
+    renderGroup(g.id);
+  });
+
+  updateHeroStats();
+}
+
+function updateHeroStats(){
+  if(!statStudents) return;
+  const totalStudents=state.students.length;
+  const totalLeaves=state.students.reduce((sum,s)=>sum+s.leaves.length,0);
+  const today=new Date();
+  const todayCount=state.students.reduce((sum,s)=>{
+    return sum + s.leaves.filter(l=>{
+      if(!l.dateISO) return false;
+      const d=new Date(l.dateISO);
+      return d.getFullYear()===today.getFullYear() &&
+        d.getMonth()===today.getMonth() &&
+        d.getDate()===today.getDate();
+    }).length;
+  },0);
+  statStudents.textContent = totalStudents.toLocaleString('ar-EG');
+  statLeavesTotal.textContent = totalLeaves.toLocaleString('ar-EG');
+  statLeavesToday.textContent = todayCount ? `اليوم: ${todayCount}` : 'لا طلبات جديدة اليوم';
+
+  GROUPS.forEach(g=>{
+    const leavesEl=document.getElementById(`stat_leaves_${g.id}`);
+    const groupEl=document.getElementById(`stat_group_${g.id}`);
+    const groupStudents = state.students.filter(s=>s.groupId===g.id);
+    const groupCount = groupStudents.length;
+    const groupLeaves = groupStudents.reduce((sum,s)=>sum+s.leaves.length,0);
+    if(groupEl) groupEl.textContent = groupCount.toLocaleString('ar-EG');
+    if(leavesEl) leavesEl.textContent = groupLeaves.toLocaleString('ar-EG');
+  });
+}
+
+/* حذف طالب من قائمة المجموعة + فتح سجل من السطر */
+pages.addEventListener('click', (ev)=>{
+  const delBtn = ev.target.closest('[data-action="delete"]');
+  if(delBtn){
+    const name = delBtn.dataset.name;
+    const group = delBtn.dataset.group;
+    const idx = state.students.findIndex(x=>x.name===name && x.groupId===group);
+    if(idx===-1) return;
+
+    openConfirm({
+      title:'حذف الطالب',
+      message:`هل تريد حذف «${name}» نهائيًا من هذه المجموعة؟`,
+      okLabel:'حذف',
+      danger:true,
+      onConfirm:()=>{
+        state.students.splice(idx,1);
+        saveAll();
+        showDone('تم الحذف ✓');
+      }
+    });
+
+    return;
+  }
+
+  const item = ev.target.closest('.item');
+  if(item && !ev.target.closest('button')){
+    const name = item.dataset.name;
+    if(name) openStudentPage(name);
+  }
+});
+
+let currentStudent=null;
+
+function openStudentPage(name){
+  currentStudent = state.students.find(x=>x.name===name);
+  if(!currentStudent){ alert('الطالب غير موجود'); return; }
+
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  studentPage.classList.add('active');
+
+  moveSelect.innerHTML='';
+  GROUPS.forEach(g=>{
+    const op=document.createElement('option'); 
+    op.value=g.id; 
+    op.textContent=g.label; 
+    if(g.id===currentStudent.groupId) op.selected=true; 
+    moveSelect.appendChild(op);
+  });
+
+  renderStudentPage();
+}
+
+function renderStudentPage(){
+  const s=currentStudent; 
+  if(!s) return;
+
+  profileBox.innerHTML = `
+    <div class="stack">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <div class="name" style="font-size:18px">${s.name}</div>
+          <div class="meta">المجموعة: ${GROUPS.find(g=>g.id===s.groupId).label} • مجموع الإجازات: ${s.leaves.length}</div>
+        </div>
+      </div>
+    </div>`;
+
+  historyList.innerHTML='';
+
+  if(!s.leaves.length){
+    historyList.innerHTML = `<div class="meta">لا يوجد سجل إجازات لهذا الطالب.</div>`;
+    return;
+  }
+
+  for(let i=s.leaves.length-1;i>=0;i--){
+    const l=s.leaves[i];
+    const d=new Date(l.dateISO).toLocaleDateString('ar-IQ',{year:'numeric',month:'2-digit',day:'2-digit'});
+    const div=document.createElement('div'); 
+    div.className='log';
+    div.dataset.leaveIndex=i;
+    div.innerHTML=`
+      <div>
+        <strong>${d}</strong>
+        <div class="leave-reason">${l.reason?('السبب: '+l.reason):'—'}</div>
+      </div>
+      <div class="row">
+        <div>✔️</div>
+        <button class="danger" data-action="delete-leave" data-leave-index="${i}">حذف الإجازة</button>
+      </div>`;
+    historyList.appendChild(div);
+  }
+}
+
+/* حذف إجازة منفردة بتأكيد من داخل الموقع */
+historyList.addEventListener('click',(e)=>{
+  const btn=e.target.closest('[data-action="delete-leave"]');
+  if(!btn || !currentStudent) return;
+  const idx=Number(btn.dataset.leaveIndex);
+  if(Number.isNaN(idx)) return;
+
+  openConfirm({
+    title:'حذف الإجازة',
+    message:'هل تريد حذف هذه الإجازة من سجل الطالب؟',
+    okLabel:'حذف',
+    danger:true,
+    onConfirm:async ()=>{
+      const leave = currentStudent.leaves[idx];
+      // نحذف محلياً أولاً
+      currentStudent.leaves.splice(idx,1);
+      saveAll();
+      renderStudentPage();
+      showDone('تم حذف الإجازة ✓');
+
+      // إذا عندنا id نحذف من Supabase
+      try{
+        if(leave && leave.id && typeof deleteLeaveById === 'function'){
+          await deleteLeaveById(leave.id);
+        }
+      }catch(err){
+        console.error('Supabase delete error', err);
+      }
+    }
+  });
+});
+/* زر الرجوع مع التوست */
+backBtn.addEventListener('click',()=>{
+  const active=document.querySelector('.tab.active')?.dataset.page || 'G1';
+  showPage(active);
+  showBackToast();
+});
+
+function showBackToast(){
+  backToast.classList.add('show');
+  setTimeout(()=>backToast.classList.remove('show'),1200);
+}
+
+giveLeaveBtn.addEventListener('click',()=>{ 
+  if(!currentStudent) return; 
+  openReasonModal(currentStudent, giveLeaveBtn); 
+});
+
+/* مسح السجل بالكامل مع مودال تأكيد */
+clearHistoryBtn.addEventListener('click',()=>{ 
+  if(!currentStudent) return; 
+  const name=currentStudent.name;
+  openConfirm({
+    title:'مسح سجل الإجازات',
+    message:`هل تريد مسح كل إجازات «${name}»؟`,
+    okLabel:'مسح',
+    danger:true,
+    onConfirm:async ()=>{
+      // مسح محلي
+      currentStudent.leaves=[];
+      saveAll();
+      openStudentPage(name);
+      showDone('تم المسح ✓');
+
+      // مسح من Supabase أيضاً (حتى بين كل الأجهزة)
+      try{
+        if(typeof clearLeavesForStudent === 'function'){
+          await clearLeavesForStudent(name);
+        }
+      }catch(err){
+        console.error('Supabase clear error', err);
+      }
+    }
+  });
+});
+/* فتح مودال نقل الطالب */
+moveBtn.addEventListener('click',()=>{
+  if(!currentStudent) return;
+  pendingMoveGroupId=null;
+  moveOptions.innerHTML='';
+  const candidates = GROUPS.filter(g=>g.id!==currentStudent.groupId);
+  if(!candidates.length){
+    alert('لا توجد مجموعة أخرى لنقل هذا الطالب إليها.');
+    return;
+  }
+  candidates.forEach(g=>{
+    const btn=document.createElement('button');
+    btn.type='button';
+    btn.className='moveOption';
+    btn.textContent=g.label;
+    btn.dataset.targetGroup=g.id;
+    btn.addEventListener('click',()=>{
+      pendingMoveGroupId=g.id;
+      Array.from(moveOptions.children).forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+    moveOptions.appendChild(btn);
+  });
+  moveModal.classList.add('show');
+});
+
+cancelMove.addEventListener('click',()=>{
+  moveModal.classList.remove('show');
+  pendingMoveGroupId=null;
+});
+
+/* تأكيد النقل بمودال داخلي */
+confirmMove.addEventListener('click',()=>{
+  if(!currentStudent) return;
+  if(!pendingMoveGroupId){
+    alert('اختَر المجموعة الجديدة أولاً.');
+    return;
+  }
+  const name=currentStudent.name;
+  const targetLabel = GROUPS.find(g=>g.id===pendingMoveGroupId)?.label || '';
+
+  openConfirm({
+    title:'تأكيد النقل',
+    message:`نقل «${name}» إلى المجموعة ${targetLabel}؟`,
+    okLabel:'نقل',
+    danger:false,
+    onConfirm:()=>{
+      currentStudent.groupId=pendingMoveGroupId;
+      pendingMoveGroupId=null;
+      saveAll();
+      showDone('تم النقل ✓');
+      moveModal.classList.remove('show');
+      renderStudentPage();
+    }
+  });
+});
+
+/* حذف الطالب من صفحة السجل مع تأكيد */
+deleteStudentBtn.addEventListener('click',()=>{ 
+  if(!currentStudent) return; 
+  const name=currentStudent.name;
+  openConfirm({
+    title:'حذف الطالب',
+    message:`هل تريد حذف «${name}» نهائيًا من جميع المجموعات والسجلات؟`,
+    okLabel:'حذف',
+    danger:true,
+    onConfirm:()=>{
+      const idx=state.students.findIndex(x=>x.name===name);
+      if(idx>-1){
+        state.students.splice(idx,1); 
+        saveAll(); 
+        showDone('تم الحذف ✓');
+        const active=document.querySelector('.tab.active')?.dataset.page || 'G1';
+        showPage(active);
+      }
+    }
+  });
+});
+
+/* مودال سبب الإجازة */
+function openReasonModal(student, triggerBtn){
+  modalContext={student, triggerBtn};
+  reasonInput.value='';
+  reasonModal.classList.add('show');
+  setTimeout(()=>reasonInput.focus(),50);
+}
+
+cancelReason.addEventListener('click',()=>{
+  reasonModal.classList.remove('show');
+});
+
+doneReason.addEventListener('click',async ()=>{
+  if(!modalContext.student) return;
+
+  const s = modalContext.student;
+  const reason = reasonInput.value.trim();
+  const dateISO = new Date().toISOString();
+
+  // إضافة محلية أولاً حتى يحس المساعد بالتحديث فوراً
+  s.leaves.push({
+    dateISO,
+    reason
+  });
+  saveAll();
+
+  // محاولة الحفظ في Supabase (مشترك بين كل الأجهزة)
+  try{
+    if(typeof addLeaveToSupabase === 'function'){
+      const row = await addLeaveToSupabase(s.name, s.groupId, dateISO, reason);
+      if(row){
+        // نخزن الـ id حتى نستخدمه في الحذف لاحقاً
+        const last = s.leaves[s.leaves.length - 1];
+        last.id = row.id;
+      }
+    }
+  }catch(err){
+    console.error('Supabase insert error', err);
+  }
+
+  if(modalContext.triggerBtn){
+    const original=modalContext.triggerBtn.textContent;
+    modalContext.triggerBtn.textContent='تم ✓';
+    setTimeout(()=>{
+      modalContext.triggerBtn.textContent=original;
+    },900);
+  }
+
+  showDone();
+
+  reasonModal.classList.remove('show');
+
+  if(currentStudent && currentStudent.name===s.name){ 
+    openStudentPage(currentStudent.name); 
+  }
+});
+function showDone(text){
+  doneToast.textContent = text || 'تم الحفظ ✓';
+  doneToast.classList.add('show');
+  setTimeout(()=>doneToast.classList.remove('show'),1200);
+}
+
+load();
+</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
